@@ -1,0 +1,33 @@
+; ft847.ini - configuration for the FT-847 quick-tune tools (CLI and GUI).
+; Copy this file to ft847.ini in the same folder and edit as needed.
+; ft847.ini is gitignored so your personal serial port settings won't
+; get committed if you push changes back to this repo.
+
+[serial]
+; Serial port. Leave blank to be prompted (CLI) or pick from the dropdown (GUI).
+; Windows example: COM3
+; Linux/Mac example: /dev/ttyUSB0
+port =
+
+; Baud rate MUST match the FT-847's CAT RATE menu setting (menu items
+; 15/16 on the rig). Factory default is 4800, but many operators run it
+; at 9600 or higher -- check your rig's menu if commands don't respond.
+baud = 9600
+
+; FT-847 CAT spec is 8 data bits, no parity, 2 stop bits.
+stopbits = 2
+bytesize = 8
+parity = N
+
+; Some USB-to-serial CAT cables use a passive level-shifter that draws
+; its power from the RTS or DTR handshaking line. If the rig doesn't
+; respond at all, try setting one of these to true.
+rts = false
+dtr = false
+
+; Delay in seconds between each CAT command sent.
+command_delay = 0.05
+
+[files]
+; Folder to scan for .txt/.csv preset files. "." = same folder as the script.
+dir = .

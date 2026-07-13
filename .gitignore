@@ -1,0 +1,15 @@
+# Personal serial/port config -- keep your COM port etc. out of git
+ft847.ini
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Sniffer logs from CAT debugging sessions
+sniff_log.txt

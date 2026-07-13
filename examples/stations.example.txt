@@ -1,0 +1,24 @@
+# FT-847 quick-tune presets
+# Format: name, frequency_hz, mode, shift, offset_hz, tone_hz
+#   name       - no spaces, used on the command line
+#   frequency  - Hz
+#   mode       - LSB USB CW CWR AM FM AMN FMN CWN CWNR
+#   shift      - '+' '-' or 'S' (simplex)
+#   offset_hz  - repeater shift amount, e.g. 600000 for 600 kHz (0 if simplex)
+#   tone_hz    - CTCSS tone e.g. 88.5, or NONE
+#
+# Examples below are placeholders -- replace with your own stations.
+# GB3TS is a UK example (2m FM repeater, 600kHz shift, tone 118.8Hz)
+
+GB3TS, 145737500, FM, +, 600000, 118.8
+GB3NT, 145762500, FM, +, 600000, NONE
+
+# Weatherfax / marine weather broadcast example (SSB, simplex, no tone)
+WMC_WEATHERFAX, 12786000, USB, S, 0, NONE
+
+# Aviation / ATC monitoring example (AM, simplex)
+# Note: FT-847 airband coverage is receive-only per its rx range (108-174 MHz)
+ATC_APPROACH, 124200000, AM, S, 0, NONE
+
+# ISS / satellite downlink example (FM, simplex)
+ISS_APRS, 145825000, FM, S, 0, NONE
