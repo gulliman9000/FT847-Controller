@@ -50,6 +50,14 @@ OP_LOCK_OFF = 0x80
 OP_RPT_SHIFT = 0x09  # fixed opcode; direction goes in the first data byte
 OP_SET_CTCSS_FREQ_MAIN = 0x0B
 OP_CTCSS_DCS_MODE_MAIN = 0x0A  # fixed opcode; mode selector in first data byte
+OP_SATELLITE_ON = 0x4E
+OP_SATELLITE_OFF = 0x8E
+
+# VFO targeting: the FT-847 selects Main/SAT-RX/SAT-TX VFO by adding an
+# offset to several base opcodes (frequency set/read, mode set, CTCSS
+# set/mode). Confirmed via the manual's opcode table and Hamlib's
+# opcode_vfo() bit-manipulation, which does exactly this.
+VFO_OFFSETS = {"main": 0x00, "satrx": 0x10, "sattx": 0x20}
 
 SHIFT_SELECTORS = {"+": 0x49, "-": 0x09, "S": 0x89}
 
@@ -179,17 +187,27 @@ def cat_lock_off(ser, delay, log=None):
     _send(ser, bytes([0, 0, 0, 0, OP_LOCK_OFF]), "CAT lock OFF", delay, log)
 
 
-def cat_set_freq(ser, freq_hz, delay, log=None):
-    cmd = freq_to_bcd(freq_hz) + bytes([OP_SET_FREQ_MAIN])
-    _send(ser, cmd, f"set freq {freq_hz} Hz", delay, log)
+def cat_satellite_on(ser, delay, log=None):
+    _send(ser, bytes([0, 0, 0, 0, OP_SATELLITE_ON]), "satellite mode ON", delay, log)
 
 
-def cat_set_mode(ser, mode, delay, log=None):
+def cat_satellite_off(ser, delay, log=None):
+    _send(ser, bytes([0, 0, 0, 0, OP_SATELLITE_OFF]), "satellite mode OFF", delay, log)
+
+
+def cat_set_freq(ser, freq_hz, delay, vfo="main", log=None):
+    opcode = OP_SET_FREQ_MAIN + VFO_OFFSETS[vfo]
+    cmd = freq_to_bcd(freq_hz) + bytes([opcode])
+    _send(ser, cmd, f"set freq {freq_hz} Hz ({vfo})", delay, log)
+
+
+def cat_set_mode(ser, mode, delay, vfo="main", log=None):
     mode = mode.upper()
     if mode not in MODE_OPCODES:
         raise Ft847Error(f"Unknown mode '{mode}'. Valid: {', '.join(MODE_OPCODES)}")
-    p1, op = MODE_OPCODES[mode]
-    _send(ser, bytes([p1, 0, 0, 0, op]), f"set mode {mode}", delay, log)
+    p1, base_op = MODE_OPCODES[mode]
+    opcode = base_op + VFO_OFFSETS[vfo]
+    _send(ser, bytes([p1, 0, 0, 0, opcode]), f"set mode {mode} ({vfo})", delay, log)
 
 
 def cat_set_rptr_shift(ser, shift, delay, log=None):
@@ -200,37 +218,42 @@ def cat_set_rptr_shift(ser, shift, delay, log=None):
     _send(ser, cmd, f"set repeater shift '{shift}'", delay, log)
 
 
-def cat_set_ctcss_tone(ser, tone_hz, delay, log=None):
+def cat_set_ctcss_tone(ser, tone_hz, delay, vfo="main", log=None):
     if tone_hz not in CTCSS_TONES:
         closest = min(CTCSS_TONES, key=lambda t: abs(t - tone_hz))
         raise Ft847Error(f"{tone_hz} Hz isn't a standard CTCSS tone. Closest: {closest} Hz.")
     code = CTCSS_TONES[tone_hz]
-    cmd = bytes([code, 0, 0, 0, OP_SET_CTCSS_FREQ_MAIN])
-    _send(ser, cmd, f"set CTCSS tone {tone_hz} Hz (0x{code:02X})", delay, log)
+    opcode = OP_SET_CTCSS_FREQ_MAIN + VFO_OFFSETS[vfo]
+    cmd = bytes([code, 0, 0, 0, opcode])
+    _send(ser, cmd, f"set CTCSS tone {tone_hz} Hz (0x{code:02X}) ({vfo})", delay, log)
 
 
-def cat_tone_encode_only_on(ser, delay, log=None):
-    cmd = bytes([D1_CTCSS_ENC_ON, 0, 0, 0, OP_CTCSS_DCS_MODE_MAIN])
-    _send(ser, cmd, "CTCSS encode only ON", delay, log)
+def cat_tone_encode_only_on(ser, delay, vfo="main", log=None):
+    opcode = OP_CTCSS_DCS_MODE_MAIN + VFO_OFFSETS[vfo]
+    cmd = bytes([D1_CTCSS_ENC_ON, 0, 0, 0, opcode])
+    _send(ser, cmd, f"CTCSS encode only ON ({vfo})", delay, log)
 
 
-def cat_tone_squelch_on(ser, delay, log=None):
-    cmd = bytes([D1_CTCSS_ENC_DEC_ON, 0, 0, 0, OP_CTCSS_DCS_MODE_MAIN])
-    _send(ser, cmd, "CTCSS encode+decode ON", delay, log)
+def cat_tone_squelch_on(ser, delay, vfo="main", log=None):
+    opcode = OP_CTCSS_DCS_MODE_MAIN + VFO_OFFSETS[vfo]
+    cmd = bytes([D1_CTCSS_ENC_DEC_ON, 0, 0, 0, opcode])
+    _send(ser, cmd, f"CTCSS encode+decode ON ({vfo})", delay, log)
 
 
-def cat_tone_squelch_off(ser, delay, log=None):
-    cmd = bytes([D1_CTCSS_DCS_OFF, 0, 0, 0, OP_CTCSS_DCS_MODE_MAIN])
-    _send(ser, cmd, "CTCSS/DCS OFF", delay, log)
+def cat_tone_squelch_off(ser, delay, vfo="main", log=None):
+    opcode = OP_CTCSS_DCS_MODE_MAIN + VFO_OFFSETS[vfo]
+    cmd = bytes([D1_CTCSS_DCS_OFF, 0, 0, 0, opcode])
+    _send(ser, cmd, f"CTCSS/DCS OFF ({vfo})", delay, log)
 
 
-def cat_read_freq_mode(ser, timeout=1.0):
+def cat_read_freq_mode(ser, vfo="main", timeout=1.0):
     """Returns (freq_hz, mode_str) or (None, None) if no response."""
+    opcode = OP_READ_FREQ_MODE_MAIN + VFO_OFFSETS[vfo]
     old_timeout = ser.timeout
     ser.timeout = timeout
     try:
         ser.reset_input_buffer()
-        ser.write(bytes([0, 0, 0, 0, OP_READ_FREQ_MODE_MAIN]))
+        ser.write(bytes([0, 0, 0, 0, opcode]))
         resp = ser.read(5)
     finally:
         ser.timeout = old_timeout
@@ -241,13 +264,14 @@ def cat_read_freq_mode(ser, timeout=1.0):
     return freq_hz, mode
 
 
-def apply_preset(ser, preset: dict, delay: float, log=None) -> dict:
-    """Sends the full command sequence for a preset. Returns a dict with
+def apply_normal_preset(ser, preset: dict, delay: float, log=None) -> dict:
+    """Sends the full command sequence for a normal (same-band, single-VFO)
+    preset -- frequency, mode, repeater shift, CTCSS. Returns a dict with
     readback results: {'freq': int|None, 'mode': str|None, 'freq_ok': bool,
     'mode_ok': bool}."""
     cat_lock_on(ser, delay, log)
-    cat_set_mode(ser, preset["mode"], delay, log)
-    cat_set_freq(ser, preset["frequency"], delay, log)
+    cat_set_mode(ser, preset["mode"], delay, log=log)
+    cat_set_freq(ser, preset["frequency"], delay, log=log)
 
     if preset["shift"] in ("+", "-"):
         cat_set_rptr_shift(ser, preset["shift"], delay, log)
@@ -255,10 +279,10 @@ def apply_preset(ser, preset: dict, delay: float, log=None) -> dict:
         cat_set_rptr_shift(ser, "S", delay, log)
 
     if preset["tone"] is not None:
-        cat_set_ctcss_tone(ser, preset["tone"], delay, log)
-        cat_tone_encode_only_on(ser, delay, log)
+        cat_set_ctcss_tone(ser, preset["tone"], delay, log=log)
+        cat_tone_encode_only_on(ser, delay, log=log)
     else:
-        cat_tone_squelch_off(ser, delay, log)
+        cat_tone_squelch_off(ser, delay, log=log)
 
     freq, mode = cat_read_freq_mode(ser)
     result = {
@@ -274,6 +298,57 @@ def apply_preset(ser, preset: dict, delay: float, log=None) -> dict:
             status = "OK" if result["freq_ok"] and result["mode_ok"] else "MISMATCH"
             log(f"Read back: {freq/1e6:.5f} MHz, {mode}  [{status}]")
     return result
+
+
+def apply_crossband_preset(ser, preset: dict, delay: float, log=None) -> dict:
+    """Sends the full command sequence for a crossband preset using the
+    FT-847's Satellite mode: independent SAT RX VFO (receive) and SAT TX
+    VFO (transmit), which can be on completely different bands. This is
+    the CAT-controllable mechanism for crossband nets, repeaters, and
+    actual satellite work alike -- the FT-847 doesn't support true CAT
+    "split" on the Main VFO, but Satellite mode covers the same need.
+
+    Preset dict must have: rx_frequency, rx_mode, tx_frequency, tx_mode,
+    and optionally tx_tone (CTCSS sent on transmit)."""
+    cat_lock_on(ser, delay, log)
+    cat_satellite_on(ser, delay, log)
+
+    cat_set_mode(ser, preset["rx_mode"], delay, vfo="satrx", log=log)
+    cat_set_freq(ser, preset["rx_frequency"], delay, vfo="satrx", log=log)
+
+    cat_set_mode(ser, preset["tx_mode"], delay, vfo="sattx", log=log)
+    cat_set_freq(ser, preset["tx_frequency"], delay, vfo="sattx", log=log)
+
+    tx_tone = preset.get("tx_tone")
+    if tx_tone is not None:
+        cat_set_ctcss_tone(ser, tx_tone, delay, vfo="sattx", log=log)
+        cat_tone_encode_only_on(ser, delay, vfo="sattx", log=log)
+    else:
+        cat_tone_squelch_off(ser, delay, vfo="sattx", log=log)
+
+    rx_freq, rx_mode = cat_read_freq_mode(ser, vfo="satrx")
+    tx_freq, tx_mode = cat_read_freq_mode(ser, vfo="sattx")
+    result = {
+        "rx_freq": rx_freq, "rx_mode": rx_mode,
+        "tx_freq": tx_freq, "tx_mode": tx_mode,
+        "rx_ok": rx_freq == preset["rx_frequency"] if rx_freq is not None else None,
+        "tx_ok": tx_freq == preset["tx_frequency"] if tx_freq is not None else None,
+    }
+    if log:
+        if rx_freq is None or tx_freq is None:
+            log("(no read-back response from rig for one or both VFOs)")
+        else:
+            status = "OK" if result["rx_ok"] and result["tx_ok"] else "MISMATCH"
+            log(f"Read back: RX {rx_freq/1e6:.5f} MHz {rx_mode}, "
+                f"TX {tx_freq/1e6:.5f} MHz {tx_mode}  [{status}]")
+    return result
+
+
+def apply_preset(ser, preset: dict, delay: float, log=None) -> dict:
+    """Dispatches to the right command sequence based on preset['type']."""
+    if preset.get("type") == "crossband":
+        return apply_crossband_preset(ser, preset, delay, log)
+    return apply_normal_preset(ser, preset, delay, log)
 
 
 # ---------------------------------------------------------------------------
@@ -316,6 +391,14 @@ def open_rig_serial(cfg: dict, port: str):
 # ---------------------------------------------------------------------------
 
 def load_presets_txt(path: str) -> dict:
+    """Parses two line formats:
+
+    Normal (6 fields):
+        name, frequency_hz, mode, shift, offset_hz, tone_hz
+
+    Crossband / satellite-mode (8 fields, 2nd field literally "CROSSBAND"):
+        name, CROSSBAND, rx_freq_hz, rx_mode, tx_freq_hz, tx_mode, tx_tone_hz, note
+    """
     presets = {}
     with open(path, "r") as f:
         for lineno, raw in enumerate(f, 1):
@@ -323,10 +406,29 @@ def load_presets_txt(path: str) -> dict:
             if not line:
                 continue
             parts = [p.strip() for p in line.split(",")]
+
+            if len(parts) >= 2 and parts[1].upper() == "CROSSBAND":
+                if len(parts) < 7:
+                    continue
+                name = parts[0]
+                rx_freq, rx_mode, tx_freq, tx_mode, tx_tone = parts[2:7]
+                note = parts[7] if len(parts) > 7 else ""
+                presets[name] = {
+                    "type": "crossband",
+                    "rx_frequency": int(rx_freq),
+                    "rx_mode": rx_mode,
+                    "tx_frequency": int(tx_freq),
+                    "tx_mode": tx_mode,
+                    "tx_tone": None if tx_tone.upper() == "NONE" else float(tx_tone),
+                    "note": note,
+                }
+                continue
+
             if len(parts) != 6:
                 continue
             name, freq, mode, shift, offset, tone = parts
             presets[name] = {
+                "type": "normal",
                 "frequency": int(freq),
                 "mode": mode,
                 "shift": shift.upper(),
@@ -410,6 +512,7 @@ def load_presets_csv(path: str, force_narrow: bool = False) -> dict:
             note_bits.append(f"downlink tone {downlink_tone} not applied")
 
         presets[name] = {
+            "type": "normal",
             "frequency": freq_hz,
             "mode": mode,
             "shift": shift,

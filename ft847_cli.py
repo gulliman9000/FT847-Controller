@@ -50,6 +50,14 @@ def choose_file_interactive(directory: str) -> str:
 def print_preset_table(presets: dict):
     print(f"\nAvailable presets ({len(presets)}):\n")
     for i, (name, p) in enumerate(presets.items(), 1):
+        if p.get("type") == "crossband":
+            tx_tone_str = f"{p['tx_tone']} Hz" if p.get("tx_tone") else "none"
+            note = f"  ({p['note']})" if p.get("note") else ""
+            print(f"  {i:>3}. {name:<16} CROSSBAND  "
+                  f"RX {p['rx_frequency']/1e6:>10.5f} MHz {p['rx_mode']:<4}  "
+                  f"TX {p['tx_frequency']/1e6:>10.5f} MHz {p['tx_mode']:<4}  "
+                  f"tx_tone={tx_tone_str}{note}")
+            continue
         tone_str = f"{p['tone']} Hz" if p["tone"] else "none"
         shift_str = {"+": "positive", "-": "negative", "S": "simplex"}[p["shift"]]
         note = f"  ({p['note']})" if p.get("note") else ""

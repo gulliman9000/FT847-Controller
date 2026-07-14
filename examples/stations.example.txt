@@ -22,3 +22,9 @@ ATC_APPROACH, 124200000, AM, S, 0, NONE
 
 # ISS / satellite downlink example (FM, simplex)
 ISS_APRS, 145825000, FM, S, 0, NONE
+
+# Crossband net example: format is
+#   name, CROSSBAND, rx_freq_hz, rx_mode, tx_freq_hz, tx_mode, tx_tone_hz, note
+# Uses the FT-847's Satellite mode (independent SAT RX / SAT TX VFOs) since
+# CAT can't drive true split on the Main VFO. RX 2m, TX 70cm.
+NIGHT_NET, CROSSBAND, 147475000, FM, 439225000, FM, NONE, Nightly crossband net

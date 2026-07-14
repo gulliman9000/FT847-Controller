@@ -84,9 +84,9 @@ class Ft847App(tk.Tk):
         columns = ("name", "freq", "mode", "shift", "offset", "tone", "note")
         self.tree = ttk.Treeview(table_frame, columns=columns, show="headings", selectmode="browse")
         headers = {
-            "name": ("Name", 110), "freq": ("Freq (MHz)", 90), "mode": ("Mode", 60),
+            "name": ("Name", 110), "freq": ("Freq (MHz)", 190), "mode": ("Mode", 80),
             "shift": ("Shift", 70), "offset": ("Offset (kHz)", 90), "tone": ("Tone (Hz)", 80),
-            "note": ("Note", 220),
+            "note": ("Note", 180),
         }
         for col, (label, width) in headers.items():
             self.tree.heading(col, text=label)
@@ -218,6 +218,15 @@ class Ft847App(tk.Tk):
     def _populate_table(self):
         self.tree.delete(*self.tree.get_children())
         for name, p in self.presets.items():
+            if p.get("type") == "crossband":
+                tone_label = f"{p['tx_tone']}" if p.get("tx_tone") else "-"
+                self.tree.insert("", "end", iid=name, values=(
+                    name,
+                    f"RX {p['rx_frequency']/1e6:.5f} / TX {p['tx_frequency']/1e6:.5f}",
+                    f"{p['rx_mode']}/{p['tx_mode']}", "X-BAND", "-", tone_label,
+                    p.get("note", ""),
+                ))
+                continue
             shift_label = {"+": "+", "-": "-", "S": "simplex"}[p["shift"]]
             tone_label = f"{p['tone']}" if p["tone"] else "-"
             self.tree.insert("", "end", iid=name, values=(

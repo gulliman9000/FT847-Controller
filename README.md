@@ -110,6 +110,25 @@ name, frequency_hz, mode, shift, offset_hz, tone_hz
 Lines starting with `#` are comments; inline `# comment` after a value is
 also stripped. See `examples/stations.example.txt`.
 
+#### Crossband nets (Satellite mode)
+
+For nets or repeaters with completely independent TX and RX frequencies
+(e.g. RX on 2m, TX on 70cm), use an 8-field line instead, with the second
+field literally `CROSSBAND`:
+
+```
+name, CROSSBAND, rx_freq_hz, rx_mode, tx_freq_hz, tx_mode, tx_tone_hz, note
+```
+
+This drives the FT-847's **Satellite mode** — independent SAT RX and SAT
+TX VFOs — since the rig doesn't support true CAT-controlled split on the
+Main VFO. It's the same mechanism the rig uses for actual satellite
+uplink/downlink, repurposed here for crossband nets. Example:
+
+```
+NIGHT_NET, CROSSBAND, 147475000, FM, 439225000, FM, NONE, Nightly crossband net
+```
+
 ### RepeaterBook.com CSV export
 
 Search RepeaterBook for your band/area, click **Download Results**, and
@@ -150,6 +169,14 @@ Documenting them here in case they help anyone else working with this rig:
    SuperControl relies on. If shift isn't engaging, check the FT-847's
    **per-band ARS (Automatic Repeater Shift) menu items** (e.g. menu #14
    for 144 MHz) rather than assuming it's a software problem.
+
+5. **Crossband operation uses Satellite mode, not split.** The FT-847 has
+   no CAT-controllable split on the Main VFO. Instead, several commands
+   (frequency set/read, mode set, CTCSS set/mode) select their target VFO
+   by *adding* an offset to a base opcode: `+0x00` for Main, `+0x10` for
+   SAT RX, `+0x20` for SAT TX. Turning on Satellite mode (opcode `0x4E`)
+   and addressing the SAT RX/TX VFOs independently gives full crossband
+   control — RX and TX can even be on completely different bands.
 
 ## Known limitations
 
