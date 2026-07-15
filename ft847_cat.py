@@ -270,6 +270,11 @@ def apply_normal_preset(ser, preset: dict, delay: float, log=None) -> dict:
     readback results: {'freq': int|None, 'mode': str|None, 'freq_ok': bool,
     'mode_ok': bool}."""
     cat_lock_on(ser, delay, log)
+    # If a previous crossband/satellite preset left the rig in Satellite
+    # mode, it stays there until explicitly turned off -- the rig doesn't
+    # revert automatically just because a new frequency is set. Always
+    # force it off for a normal preset so Main VFO behaves as expected.
+    cat_satellite_off(ser, delay, log)
     cat_set_mode(ser, preset["mode"], delay, log=log)
     cat_set_freq(ser, preset["frequency"], delay, log=log)
 
