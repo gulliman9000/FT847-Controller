@@ -176,7 +176,17 @@ Documenting them here in case they help anyone else working with this rig:
    by *adding* an offset to a base opcode: `+0x00` for Main, `+0x10` for
    SAT RX, `+0x20` for SAT TX. Turning on Satellite mode (opcode `0x4E`)
    and addressing the SAT RX/TX VFOs independently gives full crossband
-   control — RX and TX can even be on completely different bands.
+   control — RX and TX can even be on completely different bands. This
+   VFO-offset scheme, along with the lock-on frame and the read-frequency
+   command format, is independently corroborated by
+   [Hamlib issue #1286](https://github.com/Hamlib/Hamlib/issues/1286),
+   where Hamlib developers debugging the same rig's satellite-mode CAT
+   traced identical byte sequences.
+6. **A SAT RX/TX VFO may not read back correctly until it's been written
+   to at least once in the current CAT session** — reported independently
+   in the Hamlib thread above. This tool always writes both VFOs before
+   reading them back during a crossband tune, so it isn't affected, but
+   it's worth knowing if you query a SAT VFO without ever having set it.
 
 ## Known limitations
 
