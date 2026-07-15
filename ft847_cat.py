@@ -270,6 +270,10 @@ def apply_normal_preset(ser, preset: dict, delay: float, log=None) -> dict:
     readback results: {'freq': int|None, 'mode': str|None, 'freq_ok': bool,
     'mode_ok': bool}."""
     cat_lock_on(ser, delay, log)
+    if log and preset["shift"] in ("+", "-"):
+        log("(reminder: rig must be in VFO mode, not Memory mode, for "
+            "repeater shift/ARS to work -- this can't be set via CAT, "
+            "check the front panel VFO/MEM button if shift doesn't apply)")
     # If a previous crossband/satellite preset left the rig in Satellite
     # mode, it stays there until explicitly turned off -- the rig doesn't
     # revert automatically just because a new frequency is set. Always

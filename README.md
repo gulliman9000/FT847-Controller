@@ -217,6 +217,12 @@ Documenting them here in case they help anyone else working with this rig:
 - Downlink CTCSS tone (decode) isn't applied from RepeaterBook imports if
   it differs from the uplink tone — the FT-847 drives encode and decode
   from a single tone setting.
+- **Can't switch the rig between VFO and Memory mode via CAT.** Confirmed
+  absent from the protocol — even Hamlib's own FT-847 driver notes
+  `"No set_vfo function"` for this rig. Repeater shift/ARS requires VFO
+  mode, so if a preset with shift isn't applying, check the front panel
+  VFO/MEM button first; the tool prints a reminder about this whenever
+  it applies a preset with shift set.
 - Tested against one physical FT-847 with the MARS/extended-coverage
   modification. Behavior on unmodified units or different firmware
   revisions should be the same (the CAT protocol itself doesn't change),
