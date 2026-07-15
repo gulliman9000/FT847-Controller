@@ -129,6 +129,27 @@ uplink/downlink, repurposed here for crossband nets. Example:
 NIGHT_NET, CROSSBAND, 147475000, FM, 439225000, FM, NONE, Nightly crossband net
 ```
 
+#### Satellite operation
+
+Actual amateur satellite work uses the same Satellite-mode mechanism as
+crossband nets — see `examples/stations.example.txt` for working SO-50
+and ISS crossband-repeater presets.
+
+Two things to know:
+
+- **SO-50 needs a two-step tone sequence**, not one tone. Key up briefly
+  (~2 seconds) with a 74.4 Hz tone to arm its 10-minute on-timer, *then*
+  switch to 67.0 Hz for your actual transmissions — the arm tone alone
+  won't open the repeater for traffic. This is why the example file has
+  two separate SO-50 presets (`SO50_ARM` and `SO50_QSO`) sharing the same
+  frequencies but different tones, rather than one.
+- **This tool does one-shot static tuning, not continuous Doppler
+  tracking.** A satellite's downlink can drift several kHz over a pass. A
+  preset gets you correctly configured at the start, but won't follow the
+  shift as the pass progresses. For full-pass tracking, pair this with
+  dedicated satellite tracking software (e.g. Gpredict driving Hamlib's
+  `rigctld`) rather than relying on a static preset for the whole pass.
+
 ### RepeaterBook.com CSV export
 
 Search RepeaterBook for your band/area, click **Download Results**, and
