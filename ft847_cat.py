@@ -399,16 +399,33 @@ def open_rig_serial(cfg: dict, port: str):
 # Preset loading -- plain text stations.txt style
 # ---------------------------------------------------------------------------
 
+def _dedupe_name(name: str, seen: set) -> str:
+    """If name has already been used, append _2, _3, ... so duplicate
+    station names (e.g. same freq listed for two different time windows)
+    don't silently overwrite each other in the presets dict."""
+    base, result, n = name, name, 2
+    while result in seen:
+        result = f"{base}_{n}"
+        n += 1
+    seen.add(result)
+    return result
+
+
 def load_presets_txt(path: str) -> dict:
     """Parses two line formats:
 
-    Normal (6 fields):
-        name, frequency_hz, mode, shift, offset_hz, tone_hz
+    Normal (6 or 7 fields -- 7th is an optional free-text note):
+        name, frequency_hz, mode, shift, offset_hz, tone_hz [, note]
 
     Crossband / satellite-mode (8 fields, 2nd field literally "CROSSBAND"):
         name, CROSSBAND, rx_freq_hz, rx_mode, tx_freq_hz, tx_mode, tx_tone_hz, note
+
+    Duplicate names (e.g. the same station listed twice for different time
+    windows) are kept, not overwritten -- later ones get a "_2", "_3", ...
+    suffix appended.
     """
     presets = {}
+    seen_names = set()
     with open(path, "r") as f:
         for lineno, raw in enumerate(f, 1):
             line = raw.split("#", 1)[0].strip()
@@ -419,7 +436,7 @@ def load_presets_txt(path: str) -> dict:
             if len(parts) >= 2 and parts[1].upper() == "CROSSBAND":
                 if len(parts) < 7:
                     continue
-                name = parts[0]
+                name = _dedupe_name(parts[0], seen_names)
                 rx_freq, rx_mode, tx_freq, tx_mode, tx_tone = parts[2:7]
                 note = parts[7] if len(parts) > 7 else ""
                 presets[name] = {
@@ -433,9 +450,11 @@ def load_presets_txt(path: str) -> dict:
                 }
                 continue
 
-            if len(parts) != 6:
+            if len(parts) not in (6, 7):
                 continue
-            name, freq, mode, shift, offset, tone = parts
+            name, freq, mode, shift, offset, tone = parts[:6]
+            note = parts[6] if len(parts) == 7 else ""
+            name = _dedupe_name(name, seen_names)
             presets[name] = {
                 "type": "normal",
                 "frequency": int(freq),
@@ -443,7 +462,7 @@ def load_presets_txt(path: str) -> dict:
                 "shift": shift.upper(),
                 "offset": int(offset) if offset and offset != "0" else 0,
                 "tone": None if tone.upper() == "NONE" else float(tone),
-                "note": "",
+                "note": note,
             }
     return presets
 

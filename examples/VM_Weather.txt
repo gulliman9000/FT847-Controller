@@ -1,0 +1,21 @@
+# FT-847 quick-tune presets
+# Format: name, frequency_hz, mode, shift, offset_hz, tone_hz [, note]
+#   name       - identifier (spaces OK)
+#   frequency  - Hz
+#   mode       - LSB USB CW CWR AM FM AMN FMN CWN CWNR
+#   shift      - '+' '-' or 'S' (simplex)
+#   offset_hz  - repeater shift amount, e.g. 600000 for 600 kHz (0 if simplex)
+#   tone_hz    - CTCSS tone e.g. 88.5, or NONE
+#   note       - optional free-text note (7th field)
+#
+# VMC (Charleville, Australia coastal radio) weather broadcast schedule.
+# Same frequencies get reused between day/night blocks -- duplicate names
+# are auto-suffixed (_2, _3, ...) rather than overwriting each other.
+VMC 4426,     4426000, USB, S, 0, NONE, 7am to 6pm
+VMC 8176,     8176000, USB, S, 0, NONE, 7am to 6pm
+VMC 12.365,  12365000, USB, S, 0, NONE, 7am to 6pm
+VMC 16.546,  16546000, USB, S, 0, NONE, 7am to 6pm
+VMC 2201,     2201000, USB, S, 0, NONE, 6pm to 7am
+VMC 6507,     6507000, USB, S, 0, NONE, 6pm to 7am
+VMC 8176,     8176000, USB, S, 0, NONE, 6pm to 7am
+VMC 12.365,  12365000, USB, S, 0, NONE, 6pm to 7am

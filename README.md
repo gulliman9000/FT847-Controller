@@ -95,17 +95,22 @@ happens" when first setting this up.
 ### `stations.txt` style
 
 ```
-name, frequency_hz, mode, shift, offset_hz, tone_hz
+name, frequency_hz, mode, shift, offset_hz, tone_hz [, note]
 ```
 
 | Field | Meaning |
 |---|---|
-| `name` | Identifier, no spaces |
+| `name` | Identifier (spaces are fine; used as-is in the GUI table and CLI selection) |
 | `frequency_hz` | Receive/simplex frequency in Hz |
 | `mode` | `LSB` `USB` `CW` `CWR` `AM` `FM` `AMN` `FMN` `CWN` `CWNR` |
 | `shift` | `+`, `-`, or `S` (simplex) |
 | `offset_hz` | Repeater shift amount in Hz (informational — see note below) |
 | `tone_hz` | CTCSS tone, e.g. `88.5`, or `NONE` |
+| `note` | Optional free-text note, shown in both the GUI table and CLI listing |
+
+If the same name appears more than once (e.g. the same station listed
+twice for different time windows), later entries get `_2`, `_3`, etc.
+appended automatically rather than silently overwriting the earlier one.
 
 Lines starting with `#` are comments; inline `# comment` after a value is
 also stripped. See `examples/stations.example.txt`.
