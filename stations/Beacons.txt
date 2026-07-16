@@ -1,0 +1,15 @@
+# FT-847 quick-tune presets
+# Format: name, frequency_hz, mode, shift, offset_hz, tone_hz
+#   name       - no spaces, used on the command line
+#   frequency  - Hz
+#   mode       - LSB USB CW CWR AM FM AMN FMN CWN CWNR
+#   shift      - '+' '-' or 'S' (simplex)
+#   offset_hz  - repeater shift amount, e.g. 600000 for 600 kHz (0 if simplex)
+#   tone_hz    - CTCSS tone e.g. 88.5, or NONE
+#
+# Examples below are placeholders -- replace with your own stations.
+VK3RMH 10m ,     28256500, CW, S, 0, NONE
+VK3RMH 6m  ,     52336000, CW, S, 0, NONE
+VK3RMH 6m 2,  	 50432000, CW, S, 0, NONE
+VK3RMH 23cm,   1296436000, CW, S, 0, NONE
+

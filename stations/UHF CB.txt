@@ -1,0 +1,99 @@
+# FT-847 quick-tune presets -- UHF CB (Australia) channel set
+# Source: https://en.wikipedia.org/wiki/UHF_CB
+# Format: name, frequency_hz, mode, shift, offset_hz, tone_hz
+#   name       - no spaces, used on the command line
+#   frequency  - Hz
+#   mode       - LSB USB CW CWR AM FM AMN FMN CWN CWNR
+#   shift      - '+' '-' or 'S' (simplex)
+#   offset_hz  - repeater shift amount, e.g. 600000 for 600 kHz (0 if simplex)
+#   tone_hz    - CTCSS tone e.g. 88.5, or NONE
+#
+# NOTE: 476-477 MHz is outside the FT-847's normal 70cm TX allocation.
+# Treat these as RX/monitoring presets only unless your setup/licensing
+# specifically permits transmit here.
+#
+# Repeater outputs (Ch 1-8, 41-48) use shift '+' with a 750 kHz offset to
+# their paired input channel (Ch 31-38 / 71-78). Inputs are listed simplex
+# at their own frequency since the FT-847 has no separate "input channel"
+# concept -- duplex direction is a property of the output channel.
+#
+CH01_RPT,      476425000, FM,  +, 750000, NONE
+CH02_RPT,      476450000, FM,  +, 750000, NONE
+CH03_RPT,      476475000, FM,  +, 750000, NONE
+CH04_RPT,      476500000, FM,  +, 750000, NONE
+CH05_EMERG,    476525000, FM,  +, 750000, NONE
+CH06_RPT,      476550000, FM,  +, 750000, NONE
+CH07_RPT,      476575000, FM,  +, 750000, NONE
+CH08_RPT,      476600000, FM,  +, 750000, NONE
+CH09,          476625000, FM,  S, 0, NONE
+CH10_4WD,      476650000, FM,  S, 0, NONE
+CH11_CALL,     476675000, FM,  S, 0, NONE
+CH12,          476700000, FM,  S, 0, NONE
+CH13,          476725000, FM,  S, 0, NONE
+CH14,          476750000, FM,  S, 0, NONE
+CH15,          476775000, FM,  S, 0, NONE
+CH16,          476800000, FM,  S, 0, NONE
+CH17,          476825000, FM,  S, 0, NONE
+CH18_CARAVAN,  476850000, FM,  S, 0, NONE
+CH19,          476875000, FM,  S, 0, NONE
+CH20,          476900000, FM,  S, 0, NONE
+CH21,          476925000, FM,  S, 0, NONE
+CH22_DATA,     476950000, FMN, S, 0, NONE
+CH23_DATA,     476975000, FMN, S, 0, NONE
+CH24,          477000000, FM,  S, 0, NONE
+CH25,          477025000, FM,  S, 0, NONE
+CH26,          477050000, FM,  S, 0, NONE
+CH27,          477075000, FM,  S, 0, NONE
+CH28,          477100000, FM,  S, 0, NONE
+CH29_ROAD,     477125000, FM,  S, 0, NONE
+CH30_BCAST,    477150000, FM,  S, 0, NONE
+CH31_IN,       477175000, FM,  S, 0, NONE
+CH32_IN,       477200000, FM,  S, 0, NONE
+CH33_IN,       477225000, FM,  S, 0, NONE
+CH34_IN,       477250000, FM,  S, 0, NONE
+CH35_EMERG_IN, 477275000, FM,  S, 0, NONE
+CH36_IN,       477300000, FM,  S, 0, NONE
+CH37_IN,       477325000, FM,  S, 0, NONE
+CH38_IN,       477350000, FM,  S, 0, NONE
+CH39,          477375000, FM,  S, 0, NONE
+CH40_ROAD,     477400000, FM,  S, 0, NONE
+CH41_RPT,      476437500, FM,  +, 750000, NONE
+CH42_RPT,      476462500, FM,  +, 750000, NONE
+CH43_RPT,      476487500, FM,  +, 750000, NONE
+CH44_RPT,      476512500, FM,  +, 750000, NONE
+CH45_RPT,      476537500, FM,  +, 750000, NONE
+CH46_RPT,      476562500, FM,  +, 750000, NONE
+CH47_RPT,      476587500, FM,  +, 750000, NONE
+CH48_RPT,      476612500, FM,  +, 750000, NONE
+CH49,          476637500, FM,  S, 0, NONE
+CH50,          476662500, FM,  S, 0, NONE
+CH51,          476687500, FM,  S, 0, NONE
+CH52,          476712500, FM,  S, 0, NONE
+CH53,          476737500, FM,  S, 0, NONE
+CH54,          476762500, FM,  S, 0, NONE
+CH55,          476787500, FM,  S, 0, NONE
+CH56,          476812500, FM,  S, 0, NONE
+CH57,          476837500, FM,  S, 0, NONE
+CH58,          476862500, FM,  S, 0, NONE
+CH59,          476887500, FM,  S, 0, NONE
+CH60,          476912500, FM,  S, 0, NONE
+CH61_RSVD,     476937500, FM,  S, 0, NONE
+CH62_RSVD,     476962500, FM,  S, 0, NONE
+CH63_RSVD,     476987500, FM,  S, 0, NONE
+CH64,          477012500, FM,  S, 0, NONE
+CH65,          477037500, FM,  S, 0, NONE
+CH66,          477062500, FM,  S, 0, NONE
+CH67,          477087500, FM,  S, 0, NONE
+CH68,          477112500, FM,  S, 0, NONE
+CH69,          477137500, FM,  S, 0, NONE
+CH70,          477162500, FM,  S, 0, NONE
+CH71_IN,       477187500, FM,  S, 0, NONE
+CH72_IN,       477212500, FM,  S, 0, NONE
+CH73_IN,       477237500, FM,  S, 0, NONE
+CH74_IN,       477262500, FM,  S, 0, NONE
+CH75_IN,       477287500, FM,  S, 0, NONE
+CH76_IN,       477312500, FM,  S, 0, NONE
+CH77_IN,       477337500, FM,  S, 0, NONE
+CH78_IN,       477362500, FM,  S, 0, NONE
+CH79,          477387500, FM,  S, 0, NONE
+CH80,          477412500, FM,  S, 0, NONE

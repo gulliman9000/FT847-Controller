@@ -1,0 +1,58 @@
+# FT-847 quick-tune presets -- 27 MHz CB (Australia) channel set, 40 channels
+# Source: https://www.cbradioshop.com.au/2025/02/21/australian-hf-27-mhz-11m-channel-usage/
+# Format: name, frequency_hz, mode, shift, offset_hz, tone_hz
+#   name       - no spaces, used on the command line
+#   frequency  - Hz
+#   mode       - LSB USB CW CWR AM FM AMN FMN CWN CWNR
+#   shift      - '+' '-' or 'S' (simplex)
+#   offset_hz  - repeater shift amount, e.g. 600000 for 600 kHz (0 if simplex)
+#   tone_hz    - CTCSS tone e.g. 88.5, or NONE
+#
+# All 27 MHz CB channels are simplex, no CTCSS in use.
+# Channel numbering is historically out of frequency order between
+# Ch 22-26 (a legacy of the original 23-channel band being expanded) --
+# this is correct, not a typo.
+# Ch 9 is nominally AM but is also monitored on USB for emergency traffic.
+# SSB channels default to USB per common AU/US CB convention, except the
+# two channels explicitly designated LSB (16 and 35, both "call" channels).
+#
+CH01,          26965000, AM,  S, 0, NONE
+CH02,          26975000, AM,  S, 0, NONE
+CH03,          26985000, AM,  S, 0, NONE
+CH04,          27005000, AM,  S, 0, NONE
+CH05,          27015000, AM,  S, 0, NONE
+CH06,          27025000, AM,  S, 0, NONE
+CH07,          27035000, AM,  S, 0, NONE
+CH08_TRUCK,    27055000, AM,  S, 0, NONE
+CH09_EMERG,    27065000, AM,  S, 0, NONE
+CH10_4WD,      27075000, AM,  S, 0, NONE
+CH11_CALL,     27085000, AM,  S, 0, NONE
+CH12,          27105000, AM,  S, 0, NONE
+CH13,          27115000, AM,  S, 0, NONE
+CH14,          27125000, USB, S, 0, NONE
+CH15,          27135000, USB, S, 0, NONE
+CH16_CALL,     27155000, LSB, S, 0, NONE
+CH17,          27165000, USB, S, 0, NONE
+CH18,          27175000, USB, S, 0, NONE
+CH19,          27185000, USB, S, 0, NONE
+CH20,          27205000, USB, S, 0, NONE
+CH21,          27215000, USB, S, 0, NONE
+CH22_HOLIDAY,  27225000, AM,  S, 0, NONE
+CH23,          27255000, USB, S, 0, NONE
+CH24,          27235000, USB, S, 0, NONE
+CH25,          27245000, USB, S, 0, NONE
+CH26,          27265000, USB, S, 0, NONE
+CH27,          27275000, USB, S, 0, NONE
+CH28,          27285000, USB, S, 0, NONE
+CH29_ROAD,     27295000, USB, S, 0, NONE
+CH30,          27305000, USB, S, 0, NONE
+CH31,          27315000, USB, S, 0, NONE
+CH32,          27325000, USB, S, 0, NONE
+CH33,          27335000, USB, S, 0, NONE
+CH34,          27345000, USB, S, 0, NONE
+CH35_DX,       27355000, LSB, S, 0, NONE
+CH36,          27365000, USB, S, 0, NONE
+CH37,          27375000, USB, S, 0, NONE
+CH38,          27385000, USB, S, 0, NONE
+CH39,          27395000, USB, S, 0, NONE
+CH40_ROAD,     27405000, USB, S, 0, NONE

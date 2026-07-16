@@ -1,0 +1,35 @@
+# FT-847 quick-tune presets
+# Format: name, frequency_hz, mode, shift, offset_hz, tone_hz
+#   name       - no spaces, used on the command line
+#   frequency  - Hz
+#   mode       - LSB USB CW CWR AM FM AMN FMN CWN CWNR
+#   shift      - '+' '-' or 'S' (simplex)
+#   offset_hz  - repeater shift amount, e.g. 600000 for 600 kHz (0 if simplex)
+#   tone_hz    - CTCSS tone e.g. 88.5, or NONE
+#
+# Examples below are placeholders -- replace with your own stations.
+VMC 4426,     4426000, USB, S, 0, NONE, ,7am to 6pm EST
+VMC 16.546,  16546000, USB, S, 0, NONE, ,7am to 6pm EST
+VMC 2201,     2201000, USB, S, 0, NONE, ,6pm to 7am EST
+VMC 6507,     6507000, USB, S, 0, NONE, ,6pm to 7am EST
+VMC 8176,     8176000, USB, S, 0, NONE, ,24 Hours
+VMC 12.365,  12365000, USB, S, 0, NONE, ,24 Hours
+
+VMW 4149,     4149000, USB, S, 0, NONE, ,7am to 6pm WST
+VMW 16.528,  16528000, USB, S, 0, NONE, ,7am to 6pm WST
+VMW 2056,     2056000, USB, S, 0, NONE, ,6pm to 7am WST
+VMW 6230,     6230000, USB, S, 0, NONE, ,6pm to 7am WST
+VMW 8113,     8113000, USB, S, 0, NONE, ,24 hours
+VMW 12.362,  12362000, USB, S, 0, NONE, ,24 hours
+
+VMC FAX 2628,   2628000, FAX, S, 0, NONE, ,0900-1900 UTC
+VMC FAX 5100,   5100000, FAX, S, 0, NONE, ,24 hours UTC
+VMC FAX 11030, 11030000, FAX, S, 0, NONE, ,24 hours UTC
+VMC FAX 13920, 13920000, FAX, S, 0, NONE, ,24 hours UTC
+VMC FAX 20469, 20469000, FAX, S, 0, NONE, ,1900-0900 UTC
+
+VMW FAX 5755,   5755000, FAX, S, 0, NONE, ,1100-2100 UTC
+VMW FAX 7535,   7535000, FAX, S, 0, NONE, ,24 hours UTC
+VMW FAX 10555, 10555000, FAX, S, 0, NONE, ,24 hours UTC
+VMW FAX 15615, 15615000, FAX, S, 0, NONE, ,24 hours UTC
+VMW FAX 18060, 18060000, FAX, S, 0, NONE, ,2100-1100 UTC

@@ -1,0 +1,22 @@
+# FT-847 quick-tune presets
+
+# Crossband net example: format is
+#   name, CROSSBAND, rx_freq_hz, rx_mode, tx_freq_hz, tx_mode, tx_tone_hz, note
+# Uses the FT-847's Satellite mode (independent SAT RX / SAT TX VFOs) since
+# CAT can't drive true split on the Main VFO. RX 2m, TX 70cm.
+NIGHT_NET, CROSSBAND, 147475000, FM, 439225000, FM, NONE, Nightly crossband net
+
+# SO-50 needs a TWO-STEP tone sequence, not just one tone -- these are two
+# separate presets sharing the same frequencies. Key up briefly (~2 sec)
+# on SO50_ARM first to start its 10-minute on-timer, THEN switch to
+# SO50_QSO for your actual transmissions. Sending the arm tone again
+# within the window resets the timer. Downlink drifts +/-9-10kHz over a
+# pass (Doppler) -- this preset gets you on frequency at the start, but
+# doesn't track continuously through the pass.
+SO50_ARM, CROSSBAND, 436795000, FM, 145850000, FM, 74.4, SO-50: key 2sec to arm 10min timer
+SO50_QSO, CROSSBAND, 436795000, FM, 145850000, FM, 67.0, SO-50: use for actual QSO after arming
+
+# ISS crossband voice repeater (single tone, no arming needed -- but
+# check current ISS repeater status before a pass, it's been turned off
+# for extended periods in the past due to onboard equipment conflicts)
+ISS_XBAND, CROSSBAND, 437800000, FM, 145990000, FM, 67.0, ISS crossband repeater
