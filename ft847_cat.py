@@ -280,7 +280,13 @@ def apply_normal_preset(ser, preset: dict, delay: float, log=None) -> dict:
     # force it off for a normal preset so Main VFO behaves as expected.
     cat_satellite_off(ser, delay, log)
     cat_set_mode(ser, preset["mode"], delay, log=log)
-    cat_set_freq(ser, preset["frequency"], delay, log=log)
+
+    dial_offset = preset.get("dial_offset_hz", 0)
+    tuned_freq = preset["frequency"] + dial_offset
+    if log and dial_offset:
+        log(f"(published freq {preset['frequency']/1e6:.5f} MHz, "
+            f"tuning {dial_offset/1000:+.1f} kHz to {tuned_freq/1e6:.5f} MHz)")
+    cat_set_freq(ser, tuned_freq, delay, log=log)
 
     if preset["shift"] in ("+", "-"):
         cat_set_rptr_shift(ser, preset["shift"], delay, log)
@@ -297,7 +303,7 @@ def apply_normal_preset(ser, preset: dict, delay: float, log=None) -> dict:
     result = {
         "freq": freq,
         "mode": mode,
-        "freq_ok": freq == preset["frequency"] if freq is not None else None,
+        "freq_ok": freq == tuned_freq if freq is not None else None,
         "mode_ok": mode == preset["mode"].upper() if mode is not None else None,
     }
     if log:
@@ -414,8 +420,16 @@ def _dedupe_name(name: str, seen: set) -> str:
 def load_presets_txt(path: str) -> dict:
     """Parses two line formats:
 
-    Normal (6 or 7 fields -- 7th is an optional free-text note):
-        name, frequency_hz, mode, shift, offset_hz, tone_hz [, note]
+    Normal (6-9 fields):
+        name, frequency_hz, mode, shift, offset_hz, tone_hz [, dial_offset_hz] [, note]
+
+    dial_offset_hz is optional and defaults to 0. It's for cases like HF
+    weatherfax, where the published/listed frequency isn't what you
+    actually tune to on an analog SSB rig -- the demodulator expects its
+    subcarrier centered in the passband, so you tune below the published
+    carrier (commonly -1900 to -2000 Hz for USB fax). "frequency_hz" stays
+    the published frequency (easy to cross-check against a schedule); the
+    tool applies dial_offset_hz on top of it when actually tuning the rig.
 
     Crossband / satellite-mode (8 fields, 2nd field literally "CROSSBAND"):
         name, CROSSBAND, rx_freq_hz, rx_mode, tx_freq_hz, tx_mode, tx_tone_hz, note
@@ -450,10 +464,16 @@ def load_presets_txt(path: str) -> dict:
                 }
                 continue
 
-            if len(parts) not in (6, 7):
+            if len(parts) not in (6, 7, 8):
                 continue
             name, freq, mode, shift, offset, tone = parts[:6]
-            note = parts[6] if len(parts) == 7 else ""
+            dial_offset = 0
+            note = ""
+            if len(parts) == 7:
+                note = parts[6]
+            elif len(parts) == 8:
+                dial_offset = int(parts[6]) if parts[6].strip() else 0
+                note = parts[7]
             name = _dedupe_name(name, seen_names)
             presets[name] = {
                 "type": "normal",
@@ -462,6 +482,7 @@ def load_presets_txt(path: str) -> dict:
                 "shift": shift.upper(),
                 "offset": int(offset) if offset and offset != "0" else 0,
                 "tone": None if tone.upper() == "NONE" else float(tone),
+                "dial_offset_hz": dial_offset,
                 "note": note,
             }
     return presets
@@ -546,6 +567,7 @@ def load_presets_csv(path: str, force_narrow: bool = False) -> dict:
             "shift": shift,
             "offset": offset_hz,
             "tone": tone,
+            "dial_offset_hz": 0,
             "note": ", ".join(note_bits),
         }
     return presets

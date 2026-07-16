@@ -61,7 +61,13 @@ def print_preset_table(presets: dict):
         tone_str = f"{p['tone']} Hz" if p["tone"] else "none"
         shift_str = {"+": "positive", "-": "negative", "S": "simplex"}[p["shift"]]
         note = f"  ({p['note']})" if p.get("note") else ""
-        print(f"  {i:>3}. {name:<16} {p['frequency']/1e6:>10.5f} MHz  {p['mode']:<4}  "
+        dial_offset = p.get("dial_offset_hz", 0)
+        if dial_offset:
+            tuned = (p["frequency"] + dial_offset) / 1e6
+            freq_str = f"{p['frequency']/1e6:>10.5f} MHz (tune {tuned:.5f})"
+        else:
+            freq_str = f"{p['frequency']/1e6:>10.5f} MHz"
+        print(f"  {i:>3}. {name:<16} {freq_str}  {p['mode']:<4}  "
               f"shift={shift_str:<9} offset={p['offset']/1e3:.0f} kHz  tone={tone_str}{note}")
 
 

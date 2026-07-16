@@ -229,8 +229,14 @@ class Ft847App(tk.Tk):
                 continue
             shift_label = {"+": "+", "-": "-", "S": "simplex"}[p["shift"]]
             tone_label = f"{p['tone']}" if p["tone"] else "-"
+            dial_offset = p.get("dial_offset_hz", 0)
+            if dial_offset:
+                tuned = (p["frequency"] + dial_offset) / 1e6
+                freq_label = f"{p['frequency']/1e6:.5f} (tune {tuned:.5f})"
+            else:
+                freq_label = f"{p['frequency']/1e6:.5f}"
             self.tree.insert("", "end", iid=name, values=(
-                name, f"{p['frequency']/1e6:.5f}", p["mode"], shift_label,
+                name, freq_label, p["mode"], shift_label,
                 f"{p['offset']/1e3:.0f}", tone_label, p.get("note", ""),
             ))
 

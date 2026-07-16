@@ -95,17 +95,18 @@ happens" when first setting this up.
 ### `stations.txt` style
 
 ```
-name, frequency_hz, mode, shift, offset_hz, tone_hz [, note]
+name, frequency_hz, mode, shift, offset_hz, tone_hz [, dial_offset_hz] [, note]
 ```
 
 | Field | Meaning |
 |---|---|
 | `name` | Identifier (spaces are fine; used as-is in the GUI table and CLI selection) |
-| `frequency_hz` | Receive/simplex frequency in Hz |
+| `frequency_hz` | Receive/simplex frequency in Hz — the *published* frequency, if `dial_offset_hz` is used (see below) |
 | `mode` | `LSB` `USB` `CW` `CWR` `AM` `FM` `AMN` `FMN` `CWN` `CWNR` |
 | `shift` | `+`, `-`, or `S` (simplex) |
 | `offset_hz` | Repeater shift amount in Hz (informational — see note below) |
 | `tone_hz` | CTCSS tone, e.g. `88.5`, or `NONE` |
+| `dial_offset_hz` | Optional. Added to `frequency_hz` when actually tuning the rig — see Weatherfax below. Defaults to 0 if omitted. |
 | `note` | Optional free-text note, shown in both the GUI table and CLI listing |
 
 If the same name appears more than once (e.g. the same station listed
@@ -114,6 +115,23 @@ appended automatically rather than silently overwriting the earlier one.
 
 Lines starting with `#` are comments; inline `# comment` after a value is
 also stripped. See `examples/stations.example.txt`.
+
+#### Weatherfax (HF WEFAX)
+
+On an analog SSB rig like the FT-847, you don't tune to the published
+carrier frequency for HF fax — the demodulator expects its subcarrier
+centered in the passband, so you tune a couple of kHz below it (commonly
+1.9–2 kHz, depending on convention). Use `dial_offset_hz` to keep
+`frequency_hz` as the published, schedule-matching value while the tool
+applies the offset automatically:
+
+```
+WEFAX_7535, 7535000, USB, S, 0, NONE, -2000, Published 7535 kHz -- tunes 2kHz low
+```
+
+The GUI and CLI both show the published frequency plus the actual tuned
+frequency side by side, and the activity log states the adjustment
+explicitly whenever a preset with a non-zero `dial_offset_hz` is applied.
 
 #### Crossband nets (Satellite mode)
 
