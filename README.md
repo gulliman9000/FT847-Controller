@@ -267,6 +267,10 @@ Issues and pull requests welcome — especially confirmations (or
 corrections) from other FT-847 owners, additional preset-file format
 support, or GUI polish.
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

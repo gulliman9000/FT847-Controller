@@ -24,7 +24,7 @@ CONFIG_PATH = "ft847.ini"
 class Ft847App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("FT-847 Quick Tune")
+        self.title(f"FT-847 Quick Tune v{cat.__version__}")
         self.geometry("820x560")
         self.minsize(700, 450)
 
@@ -403,7 +403,7 @@ class Ft847App(tk.Tk):
     def _show_about(self):
         messagebox.showinfo(
             "About",
-            "FT-847 Quick Tune\n\n"
+            f"FT-847 Quick Tune v{cat.__version__}\n\n"
             "A free CAT-control tool for the Yaesu FT-847: repeater "
             "shift, CTCSS, and frequency/mode presets loaded from a "
             "stations.txt file or a RepeaterBook.com CSV export.\n\n"

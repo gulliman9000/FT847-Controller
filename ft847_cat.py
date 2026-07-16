@@ -25,6 +25,8 @@ hardware -- see README.md for the full story)
   software relies on too (confirmed by sniffing its actual CAT traffic).
 """
 
+__version__ = "1.5.1"
+
 import configparser
 import csv
 import os

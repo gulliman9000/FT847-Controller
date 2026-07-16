@@ -119,6 +119,7 @@ def main():
     ap.add_argument("--list", action="store_true", help="List available presets and exit")
     ap.add_argument("--status", action="store_true", help="Read back rig's current freq/mode and exit")
     ap.add_argument("--dry-run", action="store_true", help="Print what would be sent, don't open the port")
+    ap.add_argument("--version", action="version", version=f"ft847-tune {cat.__version__}")
     args = ap.parse_args()
 
     cfg = cat.load_config(args.config)
