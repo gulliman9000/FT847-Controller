@@ -88,6 +88,14 @@ CTCSS_TONES = {
     225.7: 0x11, 233.6: 0x01, 241.8: 0x10, 250.3: 0x00,
 }
 
+# "FAX" isn't a real FT-847 CAT mode -- it's a convenience alias resolved
+# at preset-load time to a real mode plus the standard listen-below-carrier
+# offset for HF weatherfax demodulation. Using it means a fax preset needs
+# no extra fields: mode=FAX implies USB + -2000 Hz dial offset. An explicit
+# dial_offset_hz field (8-field line format) still overrides the default
+# if a particular station needs something other than -2000 Hz.
+FAX_MODE_ALIAS = {"real_mode": "USB", "default_dial_offset_hz": -2000}
+
 DEFAULT_CONFIG = {
     "port": None,
     "baud": 9600,
@@ -468,17 +476,29 @@ def load_presets_txt(path: str) -> dict:
                 continue
             name, freq, mode, shift, offset, tone = parts[:6]
             dial_offset = 0
+            dial_offset_given = False
             note = ""
             if len(parts) == 7:
                 note = parts[6]
             elif len(parts) == 8:
                 dial_offset = int(parts[6]) if parts[6].strip() else 0
+                dial_offset_given = bool(parts[6].strip())
                 note = parts[7]
+
+            display_mode = mode.upper()
+            if display_mode == "FAX":
+                real_mode = FAX_MODE_ALIAS["real_mode"]
+                if not dial_offset_given:
+                    dial_offset = FAX_MODE_ALIAS["default_dial_offset_hz"]
+            else:
+                real_mode = mode
+
             name = _dedupe_name(name, seen_names)
             presets[name] = {
                 "type": "normal",
                 "frequency": int(freq),
-                "mode": mode,
+                "mode": real_mode,
+                "display_mode": display_mode,
                 "shift": shift.upper(),
                 "offset": int(offset) if offset and offset != "0" else 0,
                 "tone": None if tone.upper() == "NONE" else float(tone),
@@ -564,6 +584,7 @@ def load_presets_csv(path: str, force_narrow: bool = False) -> dict:
             "type": "normal",
             "frequency": freq_hz,
             "mode": mode,
+            "display_mode": mode,
             "shift": shift,
             "offset": offset_hz,
             "tone": tone,

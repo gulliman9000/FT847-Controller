@@ -102,7 +102,7 @@ name, frequency_hz, mode, shift, offset_hz, tone_hz [, dial_offset_hz] [, note]
 |---|---|
 | `name` | Identifier (spaces are fine; used as-is in the GUI table and CLI selection) |
 | `frequency_hz` | Receive/simplex frequency in Hz — the *published* frequency, if `dial_offset_hz` is used (see below) |
-| `mode` | `LSB` `USB` `CW` `CWR` `AM` `FM` `AMN` `FMN` `CWN` `CWNR` |
+| `mode` | `LSB` `USB` `CW` `CWR` `AM` `FM` `AMN` `FMN` `CWN` `CWNR`, or `FAX` (alias — see Weatherfax below) |
 | `shift` | `+`, `-`, or `S` (simplex) |
 | `offset_hz` | Repeater shift amount in Hz (informational — see note below) |
 | `tone_hz` | CTCSS tone, e.g. `88.5`, or `NONE` |
@@ -120,18 +120,28 @@ also stripped. See `examples/stations.example.txt`.
 
 On an analog SSB rig like the FT-847, you don't tune to the published
 carrier frequency for HF fax — the demodulator expects its subcarrier
-centered in the passband, so you tune a couple of kHz below it (commonly
-1.9–2 kHz, depending on convention). Use `dial_offset_hz` to keep
-`frequency_hz` as the published, schedule-matching value while the tool
-applies the offset automatically:
+centered in the passband, so you tune a couple of kHz below it. Use
+`FAX` as the mode instead of `USB`, and it's handled automatically —
+no extra fields needed for the common case:
 
 ```
-WEFAX_7535, 7535000, USB, S, 0, NONE, -2000, Published 7535 kHz -- tunes 2kHz low
+WEFAX_7535, 7535000, FAX, S, 0, NONE
 ```
 
-The GUI and CLI both show the published frequency plus the actual tuned
-frequency side by side, and the activity log states the adjustment
-explicitly whenever a preset with a non-zero `dial_offset_hz` is applied.
+`FAX` is a convenience alias, resolved at load time to real mode `USB`
+plus a `-2000 Hz` dial offset — the rig only ever sees a real CAT mode.
+`frequency_hz` stays the published, schedule-matching value; the tool
+applies the offset automatically when actually tuning. The GUI and CLI
+both show the published frequency plus the actual tuned frequency side
+by side, and the activity log states the adjustment explicitly.
+
+If a particular station needs a different offset than -2 kHz (e.g. -1.9
+kHz), add it explicitly using the 8-field form — this overrides the FAX
+default rather than adding to it:
+
+```
+WEFAX_CUSTOM, 5000000, FAX, S, 0, NONE, -1900, Uses -1.9kHz instead of default
+```
 
 #### Crossband nets (Satellite mode)
 

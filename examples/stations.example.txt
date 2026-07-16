@@ -44,7 +44,12 @@ SO50_QSO, CROSSBAND, 436795000, FM, 145850000, FM, 67.0, SO-50: use for actual Q
 # for extended periods in the past due to onboard equipment conflicts)
 ISS_XBAND, CROSSBAND, 437800000, FM, 145990000, FM, 67.0, ISS crossband repeater
 
-# HF weatherfax example: published carrier freq, actual tuned freq is
-# 2kHz lower for USB fax demod (dial_offset_hz = -2000).
-# Format: name, freq_hz, mode, shift, offset_hz, tone_hz, dial_offset_hz, note
-WEFAX_7535, 7535000, USB, S, 0, NONE, -2000, Published 7535 kHz -- tunes 2kHz low for fax demod
+# HF weatherfax example: "FAX" is a mode alias -- resolves to USB plus the
+# standard -2kHz listen-below-carrier offset automatically, so no extra
+# fields are needed for the common case. frequency_hz stays the published
+# schedule frequency.
+WEFAX_7535, 7535000, FAX, S, 0, NONE
+
+# If a particular fax station needs a different offset than -2kHz, add it
+# explicitly (8-field form) -- this overrides the FAX default of -2000.
+WEFAX_CUSTOM, 5000000, FAX, S, 0, NONE, -1900, Uses -1.9kHz instead of the -2kHz default
